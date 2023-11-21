@@ -3,8 +3,8 @@ Road Map
 - [X] Update ReadMe
 - [X] Evaluate related repositories
 - [X] Upload current version of Yahtzee
-- [ ] Comment the code
-- [ ] Fix bug where small straight doesn't calculate correctly
+- [X] Comment the code
+- [X] Fix bug where small straight doesn't calculate correctly
 - [ ] add window for final scores
 - [ ] add player names
 - [ ] add console output for user freindliness/ guidance
