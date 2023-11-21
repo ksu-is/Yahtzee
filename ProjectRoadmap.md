@@ -1,1 +1,12 @@
-TBD
+Road Map
+- [X] Create Repository
+- [X] Update ReadMe
+- [X] Evaluate related repositories
+- [X] Upload current version of Yahtzee
+- [ ] Comment the code
+- [ ] Fix bug where small straight doesn't calculate correctly
+- [ ] add window for final scores
+- [ ] add player names
+- [ ] add console output for user freindliness/ guidance
+- [ ] refine and organize interface
+- [ ] optimize code
