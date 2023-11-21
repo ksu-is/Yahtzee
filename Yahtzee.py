@@ -3,10 +3,12 @@ from tkinter import *
 import tkinter as tk
 from PIL import ImageTk, Image
 players = []
-
+#List to store player objects
 class Player:
+    # Initialize Player with a name, scores for different categories, turn count, and Yahtzee bonus count
     def __init__(self, name):
         self.name = name
+         # Dictionary to hold scores for different categories
         self.scores = {
             "Ones": None,
             "Twos": None,
@@ -22,8 +24,10 @@ class Player:
             "Chance": None,
             "Yahtzee": None
         }
+       
         self.turncount = 0
         self.yahtzee_bonus_count = 0
+        # Methods to set scores for different categories and calculate total scores
     def set_score(self, category, score):
         # Set the score for a specific category
         self.scores[category] = score
@@ -48,6 +52,7 @@ class Player:
 
 class YahtzeeGame:
     def __init__(self, root):
+         # Initialize the Yahtzee game with GUI elements and game variables
         self.root = root
         self.dice_images = [
             ImageTk.PhotoImage(Image.open("C:/Users/ethan/Desktop/Yahtzee/OneDie.png")),
@@ -68,6 +73,7 @@ class YahtzeeGame:
         self.create_ui()
 
     def create_ui(self):
+        #Create GUI elements to initilize the game
         self.roll_display = Canvas(self.root, width=1280, height=700, background="grey")
         self.roll_display.grid(column=5, row=5)
         self.roll_display.create_image(600, 330, image =self.title_screen)
@@ -76,6 +82,7 @@ class YahtzeeGame:
         self.game_output = tk.Label(width= 10, height= 10, text="Game")
     
     def start(self):
+        #Create game setup and rules screen
         self.menu = tk.Toplevel(self.root)
         self.menu.attributes('-fullscreen', True)
         self.commands = Label(self.menu, text="Welcome to the help & game set up screen!")
@@ -91,6 +98,7 @@ class YahtzeeGame:
         self.commands.config(text= "EXAMPLE SCORE CARD:\nUPPER SECTION \n Ones (Count and add only ones) \n Twos (Count and add only twos)\n Threes (Count and add only threes) \n Fours (count and add only fours)\n Fives (count and add only fives)\n Sixes (count and add only sixes)\n Total Score \n Bonus if Total >= 63 (Add 35) \n Total \nLOWER SECTION \n 3 of a Kind (Total all dice)\n 4 of a kind(Total all dice)\n Full House (25 Points) \n SM Straight(30 Points) \n LRG Straight (40 Points) \n YAHTZEE (50 Points) \n Chance (Add Total of all Dice) \n YAHTZEE BONUS (100 Points PER, takes place of another unused scorecard item, limit of 3) \n Total of Lower Section \n Total of Upper Section \n Grand Total )")
 
     def setup(self):
+        #Allows game to be setup with 1-4 players
         self.one_player_btn = tk.Button(self.menu, text="One Player Game", command= lambda: self.select_player(1))
         self.one_player_btn.grid()
         self.two_player = tk.Button(self.menu, text="Two Player Game", command= lambda: self.select_player(2))
@@ -101,6 +109,7 @@ class YahtzeeGame:
         self.four_player.grid()
 
     def select_player(self, number):
+        #Cycles through players in players list
         self.menu.destroy()
         self.roll_display.delete("all")
         for _ in range(number):
@@ -111,6 +120,7 @@ class YahtzeeGame:
 
 
     def get_roll(self):
+        #Gets the initial roll for a player
         self.get_player()
         if self.player.turncount == 12:
             self.player.calculate_grand_total()
@@ -122,6 +132,7 @@ class YahtzeeGame:
         print(self.player)
 
     def create_keep_btns(self):
+        #Create keep buttons that allow player to keep dice they have rolled
         re_roll_btn = tk.Button(text="ReRoll", padx=20, pady=20, command=self.re_roll)
         self.roll_display.create_window(400, 200, anchor='n', window=re_roll_btn)
 
@@ -131,6 +142,7 @@ class YahtzeeGame:
 
         self.keep_die = []
         for i, value in enumerate(self.dice_values):
+            #Place keep buttons on screen
             keep_button = tk.Button(text='KEEP', command=lambda v=value, b=i: self.keep(v, b))
             row = i // 3
             col = i % 3
@@ -144,6 +156,7 @@ class YahtzeeGame:
         self.keep_die[button_index].config(state='disabled')
 
     def re_roll(self):
+        #Re rolls the players hand
         self.roll_display.delete('all')
         while len(self.re_rolls) < 5:
             self.re_rolls.append(random.randint(1, 6))
@@ -157,6 +170,7 @@ class YahtzeeGame:
         self.reroll_counter += 1
 
     def create_scoring_btns(self):
+        #Creates buttons for scoring
         ones_btn = tk.Button(text="Ones", command= lambda : self.singles(ones_btn, 1, "Ones"))
         twos_btn = tk.Button(text="Twos", command= lambda: self.singles(twos_btn, 2, "Twos"))
         threes_btn = tk.Button(text="Threes", command= lambda: self.singles(threes_btn, 3, "Threes"))
@@ -184,6 +198,7 @@ class YahtzeeGame:
             self.yval_list.append(y)
             self.roll_display.create_window(x, y, anchor='nw', window=scoring_button)
         for i, score in enumerate(self.player.scores):
+            #Checks if a player has already scored a certain item
             if self.player.scores[score] != None:
                 self.scoring_btns[i].config(state="disabled")
                 self.roll_display.create_text(1150, self.yval_list[i], text= self.player.scores[score])
@@ -194,7 +209,7 @@ class YahtzeeGame:
         self.player_counter += 1
         if self.player_counter > len(players) - 1:
             self.player_counter = 0
-
+#Functions for scoring player's hands
     def singles(self, button, number, category):
         score = 0
         for i in self.dice_values:
@@ -304,7 +319,7 @@ class YahtzeeGame:
         self.reroll_counter = 1
         self.player.turncount += 1
         self.get_roll()
-
+#Main program is run here
 if __name__ == "__main__":
     root = Tk()
     game = YahtzeeGame(root)
