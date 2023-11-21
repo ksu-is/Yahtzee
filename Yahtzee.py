@@ -246,18 +246,16 @@ class YahtzeeGame:
         self.calculate_and_display_score("FullHouse", score, yval= 335)
         button.config(state='disabled')
         
-    def sm_straight(self,button):
+    def sm_straight(self, button):
         score = 0
-        sorted_dice = sorted(self.dice_values)
-        if (
-        [1,2,3,4] in sorted_dice or
-        [2,3,4,5] in sorted_dice or
-        [3,4,5,6] in sorted_dice
-        ):
-            score = 30
-        self.calculate_and_display_score("SmallStraight",score, yval = 370)
+        sorted_dice = sorted(set(self.dice_values))  
+        for i in range(len(sorted_dice) - 3):
+            if sorted_dice[i] + 3 >= sorted_dice[i + 3]:
+                score = 30
+                break
+        self.calculate_and_display_score("SmallStraight", score, yval=370)
         button.config(state='disabled')
-        print(sorted_dice)
+
         
         
 
