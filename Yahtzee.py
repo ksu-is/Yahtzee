@@ -79,7 +79,7 @@ class YahtzeeGame:
         self.roll_display.create_image(600, 330, image =self.title_screen)
         self.start_btn = tk.Button(text="Start", padx = 20, pady = 20, command= self.start)
         self.roll_display.create_window(600, 550,  window= self.start_btn)
-        self.game_output = tk.Label(width= 10, height= 10, text="Game")
+        self.game_console = tk.Label(width= 10, height= 10, text="Game")
     
     def start(self):
         #Create game setup and rules screen
@@ -109,27 +109,49 @@ class YahtzeeGame:
         self.four_player.grid()
 
     def select_player(self, number):
-        #Cycles through players in players list
-        self.menu.destroy()
-        self.roll_display.delete("all")
-        for _ in range(number):
-            players.append(Player("Player " + str(number)))
-        self.get_roll()
-        self.roll_display.create_window(100, 500, window= self.game_output)
-        
+        #Sets up player names and passes # of players
+        self.counter = 1
+        self.player_name = tk.StringVar
+        self.prompt = tk.Label(self.menu, text="Enter Player" + str(self.counter) + "\'s name")
+        self.prompt.grid()
+        self.name_entry = tk.Entry(self.menu, textvariable= self.player_name)
+        self.name_entry.grid()
+        self.name_btn = tk.Button(self.menu, text="Confirm Name", command= lambda: self.set_name(number))
+        self.name_btn.grid()
 
+    def set_name(self, number):
+        #allows player to set name, and sets up amount of players
+        self.player_names.append(self.name_entry.get())
+        self.counter += 1
+        self.prompt.config(text="Enter Player" + str(self.counter) + "\'s name")
+        self.name_entry.delete(0, END)
+        if len(self.player_names) >= number:
+            for i in range(number):
+                players.append(Player(self.player_names[i]))
+            self.menu.destroy()
+            self.roll_display.delete("all")
+            self.get_roll()
+
+    def game_output(self, text):
+        #Function for output to the game display "Console"
+            self.roll_display.create_window(100, 500, window= self.game_console) 
+            self.game_console.config(text= text)  
 
     def get_roll(self):
-        #Gets the initial roll for a player
+        #Gets players roll, and also checks to see if the game is completed for that player
         self.get_player()
-        if self.player.turncount == 12:
-            self.player.calculate_grand_total()
+        self.player.turncount += 1
+        self.game_output(str(self.player.name) + "\'s Turn!")
         self.dice_values = []
         for _ in range(5):
             self.dice_values.append(random.randint(1, 6))
         self.update_dice_images(self.dice_values)
         self.create_keep_btns()
-        print(self.player)
+        if self.player.turncount > 13:
+            self.player.calculate_grand_total()
+            self.roll_display.delete("all")
+            self.game_output(str(self.player.name) + "\'s final score is: " + str(self.player.grand_total))
+            self.roll_display.create_window(1150, 600, window= self.next_turn_btn)
 
     def create_keep_btns(self):
         #Create keep buttons that allow player to keep dice they have rolled
@@ -158,6 +180,7 @@ class YahtzeeGame:
     def re_roll(self):
         #Re rolls the players hand
         self.roll_display.delete('all')
+        self.game_output(str(self.player.name)+ "\'s turn!")
         while len(self.re_rolls) < 5:
             self.re_rolls.append(random.randint(1, 6))
         self.dice_values = self.re_rolls
@@ -279,6 +302,7 @@ class YahtzeeGame:
         if self.dice_values.count(self.dice_values[0]) == 5:
             score = 50
             self.yahtzees += 1
+            self.game_console.config(text="YAHTZEE!!!!!!")
         self.calculate_and_display_score("Yahtzee", score, yval = 475)
         button.config(state = 'disabled')
     
@@ -304,6 +328,7 @@ class YahtzeeGame:
                 col = 0
                 row += 1
     def yahtzee_bonus(self):
+        self.game_console.config(text="YAHTZEE BONUS!!!")
         if self.player.yahtzee_bonus_count == 2:
             self.yahtzee_bonus_btn.config(state="disabled")
         for button in self.scoring_btns:
